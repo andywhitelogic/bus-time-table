@@ -1,88 +1,132 @@
 {
   "meta": {
     "generatedAt": "2026-09-10",
-    "source": "manual-transcription",
-    "sourceUrl": "REPLACE_WITH_ARRIVA_X3_TIMETABLE_URL",
-    "note": "Placeholder times — not real. Replace with the Arriva X3 timetable before use."
+    "source": "bustimes.org (Arriva Midlands X3)",
+    "sourceUrl": "https://bustimes.org/services/x3-leicester-to-market-harborough",
+    "validFrom": "2026-09-03",
+    "note": "Monday to Friday and Saturday times, key stops only. Sunday not added yet."
   },
   "routes": [
     {
       "id": "x3",
       "code": "X3",
-      "operator": "Arriva",
-      "name": "Placeholder A – Placeholder B",
+      "operator": "Arriva Midlands",
+      "name": "Leicester and Market Harborough",
       "directions": [
         {
-          "id": "x3-outbound",
-          "name": "Towards Placeholder B",
+          "id": "x3-to-harborough",
+          "name": "To Market Harborough",
           "stops": [
-            { "id": "a-busstn", "name": "Placeholder A Bus Station" },
-            { "id": "a-highst", "name": "Placeholder A High Street" },
-            { "id": "midpoint", "name": "Midpoint Interchange" },
-            { "id": "village", "name": "Somewhere Village Green" },
-            { "id": "b-retail", "name": "Placeholder B Retail Park" },
-            { "id": "b-centre", "name": "Placeholder B Town Centre" }
+            { "id": "haymarket", "name": "Leicester, Haymarket Bus Station" },
+            { "id": "charles", "name": "Leicester, Charles Street" },
+            { "id": "clarendon", "name": "Clarendon Park, St Johns Road" },
+            { "id": "oadby", "name": "Oadby, Lidl" },
+            { "id": "greatglen", "name": "Great Glen" },
+            { "id": "kibworth", "name": "Kibworth Beauchamp, The Square" },
+            { "id": "stlukes", "name": "Market Harborough, St Luke's Hospital" },
+            { "id": "mhsquare", "name": "Market Harborough, The Square" },
+            { "id": "markethall", "name": "Market Harborough, Market Hall" }
           ],
           "services": [
             {
               "daysOfWeek": ["Mon", "Tue", "Wed", "Thu", "Fri"],
               "label": "Mondays to Fridays",
               "journeys": [
-                { "id": "o-mf-1", "times": { "a-busstn": "06:45", "a-highst": "06:49", "midpoint": "07:05", "village": "07:14", "b-retail": "07:25", "b-centre": "07:32" } },
-                { "id": "o-mf-2", "times": { "a-busstn": "07:15", "a-highst": "07:19", "midpoint": "07:37", "village": "07:47", "b-retail": "07:59", "b-centre": "08:07" } },
-                { "id": "o-mf-3", "times": { "a-busstn": "07:45", "a-highst": "07:49", "midpoint": "08:07", "village": "08:17", "b-retail": "08:29", "b-centre": "08:37" } },
-                { "id": "o-mf-4", "times": { "a-busstn": "08:15", "a-highst": "08:19", "midpoint": "08:35", "village": null, "b-retail": "08:55", "b-centre": "09:02" } },
-                { "id": "o-mf-5", "times": { "a-busstn": "09:15", "a-highst": "09:19", "midpoint": "09:35", "village": "09:44", "b-retail": "09:55", "b-centre": "10:02" } },
-                { "id": "o-mf-6", "times": { "a-busstn": "10:15", "a-highst": "10:19", "midpoint": "10:35", "village": "10:44", "b-retail": "10:55", "b-centre": "11:02" } },
-                { "id": "o-mf-7", "times": { "a-busstn": "15:15", "a-highst": "15:19", "midpoint": "15:37", "village": "15:47", "b-retail": "15:59", "b-centre": "16:07" } },
-                { "id": "o-mf-8", "times": { "a-busstn": "16:15", "a-highst": "16:19", "midpoint": "16:39", "village": "16:49", "b-retail": "17:01", "b-centre": "17:10" } },
-                { "id": "o-mf-9", "times": { "a-busstn": "17:15", "a-highst": "17:19", "midpoint": "17:37", "village": "17:47", "b-retail": "17:59", "b-centre": "18:07" } }
+                { "id": "o-mf-01", "times": { "haymarket": null, "charles": null, "clarendon": null, "oadby": null, "greatglen": null, "kibworth": "05:45", "stlukes": "05:59", "mhsquare": "06:04", "markethall": "06:05" } },
+                { "id": "o-mf-02", "times": { "haymarket": "06:00", "charles": "06:02", "clarendon": "06:10", "oadby": "06:20", "greatglen": "06:26", "kibworth": "06:41", "stlukes": "06:56", "mhsquare": "07:03", "markethall": "07:04" } },
+                { "id": "o-mf-03", "times": { "haymarket": "06:45", "charles": "06:47", "clarendon": "06:55", "oadby": "07:05", "greatglen": "07:11", "kibworth": "07:26", "stlukes": "07:41", "mhsquare": "07:48", "markethall": "07:49" } },
+                { "id": "o-mf-04", "times": { "haymarket": "07:25", "charles": "07:27", "clarendon": "07:35", "oadby": "07:45", "greatglen": "07:51", "kibworth": "08:10", "stlukes": "08:26", "mhsquare": "08:34", "markethall": "08:35" } },
+                { "id": "o-mf-05", "times": { "haymarket": "08:30", "charles": "08:32", "clarendon": "08:39", "oadby": "08:49", "greatglen": "08:55", "kibworth": "09:10", "stlukes": "09:26", "mhsquare": "09:34", "markethall": "09:35" } },
+                { "id": "o-mf-06", "times": { "haymarket": "09:30", "charles": "09:32", "clarendon": "09:39", "oadby": "09:49", "greatglen": "09:55", "kibworth": "10:10", "stlukes": "10:26", "mhsquare": "10:34", "markethall": "10:35" } },
+                { "id": "o-mf-07", "times": { "haymarket": "10:30", "charles": "10:32", "clarendon": "10:39", "oadby": "10:49", "greatglen": "10:55", "kibworth": "11:10", "stlukes": "11:26", "mhsquare": "11:34", "markethall": "11:35" } },
+                { "id": "o-mf-08", "times": { "haymarket": "11:30", "charles": "11:32", "clarendon": "11:39", "oadby": "11:49", "greatglen": "11:55", "kibworth": "12:10", "stlukes": "12:26", "mhsquare": "12:34", "markethall": "12:35" } },
+                { "id": "o-mf-09", "times": { "haymarket": "12:30", "charles": "12:32", "clarendon": "12:39", "oadby": "12:49", "greatglen": "12:55", "kibworth": "13:10", "stlukes": "13:26", "mhsquare": "13:34", "markethall": "13:35" } },
+                { "id": "o-mf-10", "times": { "haymarket": "13:30", "charles": "13:32", "clarendon": "13:39", "oadby": "13:49", "greatglen": "13:55", "kibworth": "14:10", "stlukes": "14:26", "mhsquare": "14:34", "markethall": "14:35" } },
+                { "id": "o-mf-11", "times": { "haymarket": "14:30", "charles": "14:32", "clarendon": "14:39", "oadby": "14:49", "greatglen": "14:55", "kibworth": "15:10", "stlukes": "15:26", "mhsquare": "15:34", "markethall": "15:35" } },
+                { "id": "o-mf-12", "times": { "haymarket": "15:30", "charles": "15:32", "clarendon": "15:41", "oadby": "15:53", "greatglen": "16:00", "kibworth": "16:15", "stlukes": "16:31", "mhsquare": "16:39", "markethall": "16:40" } },
+                { "id": "o-mf-13", "times": { "haymarket": "16:30", "charles": "16:32", "clarendon": "16:41", "oadby": "16:53", "greatglen": "17:00", "kibworth": "17:15", "stlukes": "17:31", "mhsquare": "17:39", "markethall": "17:40" } },
+                { "id": "o-mf-14", "times": { "haymarket": "17:45", "charles": "17:47", "clarendon": "17:55", "oadby": "18:10", "greatglen": "18:16", "kibworth": "18:31", "stlukes": "18:47", "mhsquare": "18:55", "markethall": "18:56" } },
+                { "id": "o-mf-15", "times": { "haymarket": "18:45", "charles": "18:47", "clarendon": "18:55", "oadby": "19:10", "greatglen": "19:16", "kibworth": "19:31", "stlukes": "19:47", "mhsquare": "19:55", "markethall": "19:56" } },
+                { "id": "o-mf-16", "times": { "haymarket": "19:55", "charles": "19:57", "clarendon": "20:05", "oadby": "20:20", "greatglen": "20:26", "kibworth": "20:41", "stlukes": "20:57", "mhsquare": "21:05", "markethall": "21:06" } }
               ]
             },
             {
               "daysOfWeek": ["Sat"],
               "label": "Saturdays",
               "journeys": [
-                { "id": "o-sat-1", "times": { "a-busstn": "08:15", "a-highst": "08:19", "midpoint": "08:35", "village": "08:44", "b-retail": "08:55", "b-centre": "09:02" } },
-                { "id": "o-sat-2", "times": { "a-busstn": "09:15", "a-highst": "09:19", "midpoint": "09:35", "village": "09:44", "b-retail": "09:55", "b-centre": "10:02" } },
-                { "id": "o-sat-3", "times": { "a-busstn": "10:15", "a-highst": "10:19", "midpoint": "10:35", "village": "10:44", "b-retail": "10:55", "b-centre": "11:02" } },
-                { "id": "o-sat-4", "times": { "a-busstn": "11:15", "a-highst": "11:19", "midpoint": "11:35", "village": "11:44", "b-retail": "11:55", "b-centre": "12:02" } },
-                { "id": "o-sat-5", "times": { "a-busstn": "12:15", "a-highst": "12:19", "midpoint": "12:35", "village": "12:44", "b-retail": "12:55", "b-centre": "13:02" } }
+                { "id": "o-sa-01", "times": { "haymarket": "06:35", "charles": "06:37", "clarendon": "06:45", "oadby": "06:55", "greatglen": "07:01", "kibworth": "07:16", "stlukes": "07:31", "mhsquare": "07:38", "markethall": "07:39" } },
+                { "id": "o-sa-02", "times": { "haymarket": "07:30", "charles": "07:32", "clarendon": "07:39", "oadby": "07:54", "greatglen": "07:57", "kibworth": "08:10", "stlukes": "08:26", "mhsquare": "08:34", "markethall": "08:35" } },
+                { "id": "o-sa-03", "times": { "haymarket": "08:30", "charles": "08:32", "clarendon": "08:39", "oadby": "08:54", "greatglen": "08:57", "kibworth": "09:10", "stlukes": "09:26", "mhsquare": "09:34", "markethall": "09:35" } },
+                { "id": "o-sa-04", "times": { "haymarket": "09:30", "charles": "09:32", "clarendon": "09:39", "oadby": "09:54", "greatglen": "09:57", "kibworth": "10:10", "stlukes": "10:26", "mhsquare": "10:34", "markethall": "10:35" } },
+                { "id": "o-sa-05", "times": { "haymarket": "10:30", "charles": "10:32", "clarendon": "10:39", "oadby": "10:54", "greatglen": "10:57", "kibworth": "11:10", "stlukes": "11:26", "mhsquare": "11:34", "markethall": "11:35" } },
+                { "id": "o-sa-06", "times": { "haymarket": "11:30", "charles": "11:32", "clarendon": "11:39", "oadby": "11:54", "greatglen": "11:57", "kibworth": "12:10", "stlukes": "12:26", "mhsquare": "12:34", "markethall": "12:35" } },
+                { "id": "o-sa-07", "times": { "haymarket": "12:30", "charles": "12:32", "clarendon": "12:39", "oadby": "12:54", "greatglen": "12:57", "kibworth": "13:10", "stlukes": "13:26", "mhsquare": "13:34", "markethall": "13:35" } },
+                { "id": "o-sa-08", "times": { "haymarket": "13:30", "charles": "13:32", "clarendon": "13:39", "oadby": "13:54", "greatglen": "13:57", "kibworth": "14:10", "stlukes": "14:26", "mhsquare": "14:34", "markethall": "14:35" } },
+                { "id": "o-sa-09", "times": { "haymarket": "14:30", "charles": "14:32", "clarendon": "14:39", "oadby": "14:54", "greatglen": "14:57", "kibworth": "15:10", "stlukes": "15:26", "mhsquare": "15:34", "markethall": "15:35" } },
+                { "id": "o-sa-10", "times": { "haymarket": "15:30", "charles": "15:33", "clarendon": "15:41", "oadby": "15:53", "greatglen": "16:00", "kibworth": "16:15", "stlukes": "16:31", "mhsquare": "16:39", "markethall": "16:40" } },
+                { "id": "o-sa-11", "times": { "haymarket": "16:30", "charles": "16:33", "clarendon": "16:41", "oadby": "16:53", "greatglen": "17:00", "kibworth": "17:15", "stlukes": "17:31", "mhsquare": "17:39", "markethall": "17:40" } },
+                { "id": "o-sa-12", "times": { "haymarket": "17:45", "charles": "17:47", "clarendon": "17:56", "oadby": "18:10", "greatglen": "18:16", "kibworth": "18:31", "stlukes": "18:47", "mhsquare": "18:55", "markethall": "18:56" } },
+                { "id": "o-sa-13", "times": { "haymarket": "18:45", "charles": "18:47", "clarendon": "18:56", "oadby": "19:10", "greatglen": "19:16", "kibworth": "19:31", "stlukes": "19:47", "mhsquare": "19:55", "markethall": "19:56" } },
+                { "id": "o-sa-14", "times": { "haymarket": "19:55", "charles": "19:57", "clarendon": "20:06", "oadby": "20:20", "greatglen": "20:26", "kibworth": "20:41", "stlukes": "20:57", "mhsquare": "21:05", "markethall": "21:06" } }
               ]
             }
           ]
         },
         {
-          "id": "x3-inbound",
-          "name": "Towards Placeholder A",
+          "id": "x3-to-leicester",
+          "name": "To Leicester",
           "stops": [
-            { "id": "b-centre", "name": "Placeholder B Town Centre" },
-            { "id": "b-retail", "name": "Placeholder B Retail Park" },
-            { "id": "village", "name": "Somewhere Village Green" },
-            { "id": "midpoint", "name": "Midpoint Interchange" },
-            { "id": "a-highst", "name": "Placeholder A High Street" },
-            { "id": "a-busstn", "name": "Placeholder A Bus Station" }
+            { "id": "markethall", "name": "Market Harborough, Market Hall" },
+            { "id": "mhsquare", "name": "Market Harborough, The Square" },
+            { "id": "stlukes", "name": "Market Harborough, St Luke's Hospital" },
+            { "id": "kibworth", "name": "Kibworth Beauchamp, The Square" },
+            { "id": "greatglen", "name": "Great Glen" },
+            { "id": "oadby", "name": "Oadby, Lidl" },
+            { "id": "clarendon", "name": "Clarendon Park, St Johns Road" },
+            { "id": "charles", "name": "Leicester, Charles Street" },
+            { "id": "haymarket", "name": "Leicester, Haymarket Bus Station" }
           ],
           "services": [
             {
               "daysOfWeek": ["Mon", "Tue", "Wed", "Thu", "Fri"],
               "label": "Mondays to Fridays",
               "journeys": [
-                { "id": "i-mf-1", "times": { "b-centre": "07:05", "b-retail": "07:11", "village": "07:22", "midpoint": "07:32", "a-highst": "07:48", "a-busstn": "07:53" } },
-                { "id": "i-mf-2", "times": { "b-centre": "07:35", "b-retail": "07:41", "village": "07:52", "midpoint": "08:04", "a-highst": "08:22", "a-busstn": "08:27" } },
-                { "id": "i-mf-3", "times": { "b-centre": "08:05", "b-retail": "08:11", "village": "08:22", "midpoint": "08:34", "a-highst": "08:52", "a-busstn": "08:57" } },
-                { "id": "i-mf-4", "times": { "b-centre": "15:35", "b-retail": "15:41", "village": "15:52", "midpoint": "16:06", "a-highst": "16:24", "a-busstn": "16:29" } },
-                { "id": "i-mf-5", "times": { "b-centre": "16:35", "b-retail": "16:41", "village": "16:52", "midpoint": "17:06", "a-highst": "17:24", "a-busstn": "17:29" } },
-                { "id": "i-mf-6", "times": { "b-centre": "17:35", "b-retail": "17:41", "village": "17:52", "midpoint": "18:04", "a-highst": "18:20", "a-busstn": "18:25" } }
+                { "id": "i-mf-01", "times": { "markethall": "06:08", "mhsquare": "06:12", "stlukes": "06:19", "kibworth": "06:34", "greatglen": "06:46", "oadby": "06:57", "clarendon": "07:11", "charles": "07:18", "haymarket": "07:20" } },
+                { "id": "i-mf-02", "times": { "markethall": "07:09", "mhsquare": "07:13", "stlukes": "07:17", "kibworth": "07:35", "greatglen": "07:47", "oadby": "07:58", "clarendon": "08:10", "charles": "08:19", "haymarket": "08:22" } },
+                { "id": "i-mf-03", "times": { "markethall": "07:54", "mhsquare": "07:58", "stlukes": "08:04", "kibworth": "08:20", "greatglen": "08:32", "oadby": "08:43", "clarendon": "08:55", "charles": "09:05", "haymarket": "09:07" } },
+                { "id": "i-mf-04", "times": { "markethall": "08:44", "mhsquare": "08:48", "stlukes": "08:55", "kibworth": "09:10", "greatglen": "09:22", "oadby": "09:33", "clarendon": "09:45", "charles": "09:55", "haymarket": "09:57" } },
+                { "id": "i-mf-05", "times": { "markethall": "09:44", "mhsquare": "09:48", "stlukes": "09:55", "kibworth": "10:10", "greatglen": "10:22", "oadby": "10:33", "clarendon": "10:45", "charles": "10:55", "haymarket": "10:57" } },
+                { "id": "i-mf-06", "times": { "markethall": "10:44", "mhsquare": "10:48", "stlukes": "10:55", "kibworth": "11:10", "greatglen": "11:22", "oadby": "11:33", "clarendon": "11:45", "charles": "11:55", "haymarket": "11:57" } },
+                { "id": "i-mf-07", "times": { "markethall": "11:44", "mhsquare": "11:48", "stlukes": "11:55", "kibworth": "12:10", "greatglen": "12:22", "oadby": "12:33", "clarendon": "12:45", "charles": "12:55", "haymarket": "12:57" } },
+                { "id": "i-mf-08", "times": { "markethall": "12:44", "mhsquare": "12:48", "stlukes": "12:55", "kibworth": "13:10", "greatglen": "13:22", "oadby": "13:33", "clarendon": "13:45", "charles": "13:55", "haymarket": "13:57" } },
+                { "id": "i-mf-09", "times": { "markethall": "13:44", "mhsquare": "13:48", "stlukes": "13:55", "kibworth": "14:10", "greatglen": "14:22", "oadby": "14:33", "clarendon": "14:45", "charles": "14:55", "haymarket": "14:57" } },
+                { "id": "i-mf-10", "times": { "markethall": "14:39", "mhsquare": "14:43", "stlukes": "14:51", "kibworth": "15:10", "greatglen": "15:22", "oadby": "15:35", "clarendon": "15:47", "charles": "15:58", "haymarket": "16:00" } },
+                { "id": "i-mf-11", "times": { "markethall": "15:39", "mhsquare": "15:43", "stlukes": "15:51", "kibworth": "16:10", "greatglen": "16:22", "oadby": "16:36", "clarendon": "16:48", "charles": "16:58", "haymarket": "17:00" } },
+                { "id": "i-mf-12", "times": { "markethall": "16:45", "mhsquare": "16:49", "stlukes": "16:56", "kibworth": "17:14", "greatglen": "17:26", "oadby": "17:40", "clarendon": "17:52", "charles": "18:02", "haymarket": "18:04" } },
+                { "id": "i-mf-13", "times": { "markethall": "17:49", "mhsquare": "17:53", "stlukes": "18:00", "kibworth": "18:15", "greatglen": "18:27", "oadby": "18:37", "clarendon": "18:49", "charles": "18:58", "haymarket": "19:00" } },
+                { "id": "i-mf-14", "times": { "markethall": "19:01", "mhsquare": "19:05", "stlukes": "19:12", "kibworth": "19:30", "greatglen": "19:40", "oadby": "19:50", "clarendon": "20:01", "charles": "20:10", "haymarket": "20:12" } },
+                { "id": "i-mf-15", "times": { "markethall": "20:01", "mhsquare": "20:05", "stlukes": "20:12", "kibworth": "20:30", "greatglen": "20:40", "oadby": "20:50", "clarendon": "21:01", "charles": "21:10", "haymarket": "21:12" } },
+                { "id": "i-mf-16", "times": { "markethall": "21:11", "mhsquare": "21:15", "stlukes": "21:22", "kibworth": "21:40", "greatglen": "21:50", "oadby": "22:00", "clarendon": "22:11", "charles": "22:20", "haymarket": "22:22" } }
               ]
             },
             {
               "daysOfWeek": ["Sat"],
               "label": "Saturdays",
               "journeys": [
-                { "id": "i-sat-1", "times": { "b-centre": "09:35", "b-retail": "09:41", "village": "09:52", "midpoint": "10:04", "a-highst": "10:20", "a-busstn": "10:25" } },
-                { "id": "i-sat-2", "times": { "b-centre": "11:35", "b-retail": "11:41", "village": "11:52", "midpoint": "12:04", "a-highst": "12:20", "a-busstn": "12:25" } },
-                { "id": "i-sat-3", "times": { "b-centre": "13:35", "b-retail": "13:41", "village": "13:52", "midpoint": "14:04", "a-highst": "14:20", "a-busstn": "14:25" } }
+                { "id": "i-sa-01", "times": { "markethall": "07:44", "mhsquare": "07:48", "stlukes": "07:55", "kibworth": "08:10", "greatglen": "08:21", "oadby": "08:33", "clarendon": "08:45", "charles": "08:55", "haymarket": "08:57" } },
+                { "id": "i-sa-02", "times": { "markethall": "08:44", "mhsquare": "08:48", "stlukes": "08:55", "kibworth": "09:10", "greatglen": "09:21", "oadby": "09:33", "clarendon": "09:45", "charles": "09:55", "haymarket": "09:57" } },
+                { "id": "i-sa-03", "times": { "markethall": "09:44", "mhsquare": "09:48", "stlukes": "09:55", "kibworth": "10:10", "greatglen": "10:21", "oadby": "10:33", "clarendon": "10:45", "charles": "10:55", "haymarket": "10:57" } },
+                { "id": "i-sa-04", "times": { "markethall": "10:44", "mhsquare": "10:48", "stlukes": "10:55", "kibworth": "11:10", "greatglen": "11:21", "oadby": "11:33", "clarendon": "11:45", "charles": "11:55", "haymarket": "11:57" } },
+                { "id": "i-sa-05", "times": { "markethall": "11:44", "mhsquare": "11:48", "stlukes": "11:55", "kibworth": "12:10", "greatglen": "12:21", "oadby": "12:33", "clarendon": "12:45", "charles": "12:55", "haymarket": "12:57" } },
+                { "id": "i-sa-06", "times": { "markethall": "12:44", "mhsquare": "12:48", "stlukes": "12:55", "kibworth": "13:10", "greatglen": "13:21", "oadby": "13:33", "clarendon": "13:45", "charles": "13:55", "haymarket": "13:57" } },
+                { "id": "i-sa-07", "times": { "markethall": "13:44", "mhsquare": "13:48", "stlukes": "13:55", "kibworth": "14:10", "greatglen": "14:21", "oadby": "14:33", "clarendon": "14:45", "charles": "14:55", "haymarket": "14:57" } },
+                { "id": "i-sa-08", "times": { "markethall": "14:44", "mhsquare": "14:48", "stlukes": "14:55", "kibworth": "15:10", "greatglen": "15:21", "oadby": "15:33", "clarendon": "15:45", "charles": "15:55", "haymarket": "15:57" } },
+                { "id": "i-sa-09", "times": { "markethall": "15:44", "mhsquare": "15:48", "stlukes": "15:55", "kibworth": "16:10", "greatglen": "16:21", "oadby": "16:33", "clarendon": "16:45", "charles": "16:55", "haymarket": "16:57" } },
+                { "id": "i-sa-10", "times": { "markethall": "16:44", "mhsquare": "16:48", "stlukes": "16:55", "kibworth": "17:10", "greatglen": "17:21", "oadby": "17:33", "clarendon": "17:45", "charles": "17:55", "haymarket": "17:57" } },
+                { "id": "i-sa-11", "times": { "markethall": "17:44", "mhsquare": "17:48", "stlukes": "17:55", "kibworth": "18:10", "greatglen": "18:21", "oadby": "18:33", "clarendon": "18:45", "charles": "18:55", "haymarket": "18:57" } },
+                { "id": "i-sa-12", "times": { "markethall": "19:01", "mhsquare": "19:05", "stlukes": "19:12", "kibworth": "19:30", "greatglen": "19:39", "oadby": "19:50", "clarendon": "20:01", "charles": "20:10", "haymarket": "20:12" } },
+                { "id": "i-sa-13", "times": { "markethall": "20:01", "mhsquare": "20:05", "stlukes": "20:12", "kibworth": "20:30", "greatglen": "20:39", "oadby": "20:50", "clarendon": "21:01", "charles": "21:10", "haymarket": "21:12" } },
+                { "id": "i-sa-14", "times": { "markethall": "21:11", "mhsquare": "21:15", "stlukes": "21:22", "kibworth": "21:40", "greatglen": "21:49", "oadby": "22:00", "clarendon": "22:11", "charles": "22:20", "haymarket": "22:22" } }
               ]
             }
           ]

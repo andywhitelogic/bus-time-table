@@ -8,17 +8,13 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="app-header">
-    <h1 id="route-title">Bus Times</h1>
-    <p id="route-subtitle" class="subtitle"></p>
-  </header>
-
   <main>
-    <section class="controls" aria-label="Choose your journey">
-      <label class="field" id="route-field" hidden>
-        <span>Route</span>
+    <section class="controls" aria-label="Choose your bus">
+      <div class="field field-route">
+        <span>Bus</span>
         <select id="route-select"></select>
-      </label>
+        <strong id="route-static"></strong>
+      </div>
 
       <label class="field">
         <span>Direction</span>
@@ -36,10 +32,13 @@
       </label>
     </section>
 
+    <p id="route-line" class="route-line"></p>
+
     <section class="next-buses" aria-live="polite">
       <h2>Next departures</h2>
       <ol id="next-list" class="next-list"></ol>
       <p id="next-empty" class="empty" hidden>No more buses from this stop today.</p>
+      <p class="hint">Tap a time to see when it reaches each stop.</p>
     </section>
 
     <section class="full-timetable">
@@ -52,7 +51,7 @@
 
   <footer class="app-footer">
     <p id="data-note"></p>
-    <p class="disclaimer">Always check with the operator before travelling.</p>
+    <p class="disclaimer">Always check with Arriva before travelling.</p>
   </footer>
 
   <script src="app.js"></script>

@@ -3,9 +3,17 @@
 A tiny static web app that shows the next departures for a bus route from a chosen
 stop, plus the full timetable for the day. Built for phones first.
 
-Currently set up for **Arriva X3**. Stagecoach **X7** can be added later by dropping
-another entry into `data/timetable.json` — the app shows a route picker automatically
-once there is more than one route.
+Currently set up for **Arriva Midlands X3** (Leicester and Market Harborough), key
+stops only, Monday to Saturday. Times were transcribed from
+[bustimes.org](https://bustimes.org/services/x3-leicester-to-market-harborough)
+(timetable valid from 3 September 2026). Sunday is not in the data yet.
+
+Stagecoach **X7** can be added later by dropping another route entry into
+`data/timetable.json`. The app shows a route picker automatically once there is more
+than one route.
+
+Tapping a departure expands it to show the time that bus reaches every stop after
+yours, with the destination arrival highlighted.
 
 ## Files
 
@@ -50,14 +58,14 @@ Edit `data/timetable.json`.
     {
       "id": "x3",                 // stable slug, used in saved preferences
       "code": "X3",               // shown to the user
-      "operator": "Arriva",
-      "name": "Town A – Town B",
+      "operator": "Arriva Midlands",
+      "name": "Leicester and Market Harborough",
       "directions": [
         {
-          "id": "x3-outbound",
-          "name": "Towards Town B",
+          "id": "x3-to-harborough",
+          "name": "To Market Harborough",
           "stops": [
-            { "id": "a-busstn", "name": "Town A Bus Station" }
+            { "id": "haymarket", "name": "Leicester, Haymarket Bus Station" }
             // ...in timetable order
           ],
           "services": [
@@ -66,10 +74,10 @@ Edit `data/timetable.json`.
               "label": "Mondays to Fridays",
               "journeys": [
                 {
-                  "id": "o-mf-1",
+                  "id": "o-mf-02",
                   "times": {
-                    "a-busstn": "06:45",   // "HH:MM" 24-hour
-                    "midpoint": null        // null = bus does not call here
+                    "haymarket": "06:00",   // "HH:MM" 24-hour
+                    "kibworth": null         // null = this journey skips / starts after this stop
                   }
                 }
               ]

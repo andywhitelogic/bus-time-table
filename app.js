@@ -8,10 +8,9 @@ const DAY_LABELS = {
 const STORE_KEY = "bus-times-choice";
 
 const el = {
-  routeTitle: document.getElementById("route-title"),
-  routeSubtitle: document.getElementById("route-subtitle"),
-  routeField: document.getElementById("route-field"),
   routeSelect: document.getElementById("route-select"),
+  routeStatic: document.getElementById("route-static"),
+  routeLine: document.getElementById("route-line"),
   directionSelect: document.getElementById("direction-select"),
   stopSelect: document.getElementById("stop-select"),
   daySelect: document.getElementById("day-select"),
@@ -24,7 +23,7 @@ const el = {
 
 let DATA = null;
 let choice = loadChoice();
-let tick = null;
+let expandedKey = null; // which departure row is open
 
 init();
 
@@ -34,7 +33,7 @@ async function init() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     DATA = await res.json();
   } catch (err) {
-    el.routeSubtitle.textContent = "Could not load timetable data.";
+    el.routeLine.textContent = "Could not load timetable data.";
     console.error(err);
     return;
   }
@@ -52,16 +51,19 @@ async function init() {
   el.directionSelect.addEventListener("change", () => {
     choice.directionId = el.directionSelect.value;
     choice.stopId = null;
+    expandedKey = null;
     saveChoice();
     onDirectionChange();
   });
   el.stopSelect.addEventListener("change", () => {
     choice.stopId = el.stopSelect.value;
+    expandedKey = null;
     saveChoice();
     render();
   });
   el.daySelect.addEventListener("change", () => {
     choice.dayKey = el.daySelect.value;
+    expandedKey = null;
     saveChoice();
     render();
   });
@@ -74,12 +76,9 @@ async function init() {
 
   onRouteChange();
 
-  if (DATA.meta && DATA.meta.note) {
-    el.dataNote.textContent = DATA.meta.note;
-  }
+  if (DATA.meta && DATA.meta.note) el.dataNote.textContent = DATA.meta.note;
 
-  // Refresh countdowns every 30s.
-  tick = setInterval(render, 30000);
+  setInterval(render, 30000);
 }
 
 /* ---------- option builders ---------- */
@@ -100,25 +99,29 @@ function buildDayOptions() {
 
 function buildRouteOptions() {
   const routes = DATA.routes || [];
-  el.routeField.hidden = routes.length < 2;
+  const single = routes.length < 2;
+  el.routeSelect.hidden = single;
+  el.routeStatic.hidden = !single;
+
   el.routeSelect.innerHTML = "";
   for (const r of routes) {
     const opt = document.createElement("option");
     opt.value = r.id;
-    opt.textContent = `${r.code} — ${r.name}`;
+    opt.textContent = r.code;
     el.routeSelect.appendChild(opt);
   }
   if (!routes.some((r) => r.id === choice.routeId)) {
     choice.routeId = routes[0] && routes[0].id;
   }
   el.routeSelect.value = choice.routeId;
+  if (single && routes[0]) el.routeStatic.textContent = routes[0].code;
 }
 
 function onRouteChange() {
   const route = currentRoute();
   if (!route) return;
-  el.routeTitle.textContent = `${route.code} ${route.operator ? "· " + route.operator : ""}`.trim();
-  el.routeSubtitle.textContent = route.name;
+  el.routeStatic.textContent = route.code;
+  el.routeLine.textContent = `${route.name}${route.operator ? " · " + route.operator : ""}`;
 
   el.directionSelect.innerHTML = "";
   for (const d of route.directions) {
@@ -163,7 +166,6 @@ function currentDirection() {
   return route.directions.find((d) => d.id === choice.directionId) || null;
 }
 
-// All journeys that run on the chosen day, flattened across matching services.
 function journeysForDay() {
   const dir = currentDirection();
   if (!dir) return [];
@@ -203,33 +205,96 @@ function renderNext() {
   const now = new Date();
   const nowMin = now.getHours() * 60 + now.getMinutes();
 
-  let times = journeysForDay()
-    .map((j) => j.times[stopId])
-    .filter(Boolean)
-    .map(toMinutes)
-    .sort((a, b) => a - b);
+  const rows = journeysForDay()
+    .map((j) => ({ j, dep: j.times[stopId] }))
+    .filter((r) => r.dep)
+    .sort((a, b) => toMinutes(a.dep) - toMinutes(b.dep));
 
-  let upcoming = isToday ? times.filter((t) => t >= nowMin) : times;
-  const shown = upcoming.slice(0, isToday ? 4 : upcoming.length);
+  const list = isToday ? rows.filter((r) => toMinutes(r.dep) >= nowMin) : rows;
+  const shown = isToday ? list.slice(0, 5) : list;
 
   el.nextList.innerHTML = "";
   el.nextEmpty.hidden = shown.length > 0;
 
-  for (const t of shown) {
+  const stopIdx = dir.stops.findIndex((s) => s.id === stopId);
+
+  for (const { j, dep } of shown) {
+    const key = `${j.id}@${dep}`;
     const li = document.createElement("li");
+
+    const btn = document.createElement("button");
+    btn.className = "dep";
+    btn.type = "button";
+    btn.setAttribute("aria-expanded", String(expandedKey === key));
+
     const time = document.createElement("span");
     time.className = "time";
-    time.textContent = fmt(t);
-    const cd = document.createElement("span");
-    cd.className = "countdown";
+    time.textContent = dep;
+
+    const right = document.createElement("span");
+    right.className = "countdown";
     if (isToday) {
-      const mins = t - nowMin;
-      cd.textContent = mins <= 0 ? "due" : mins < 60 ? `${mins} min` : `${Math.floor(mins / 60)}h ${mins % 60}m`;
-      if (mins <= 15) cd.classList.add("soon");
+      const mins = toMinutes(dep) - nowMin;
+      right.textContent =
+        mins <= 0 ? "due" : mins < 60 ? `${mins} min` : `${Math.floor(mins / 60)}h ${mins % 60}m`;
+      if (mins <= 15) right.classList.add("soon");
     }
-    li.append(time, cd);
+
+    const chev = document.createElement("span");
+    chev.className = "chevron";
+    chev.textContent = "›";
+    right.appendChild(document.createTextNode(" "));
+    right.appendChild(chev);
+
+    btn.append(time, right);
+    btn.addEventListener("click", () => {
+      expandedKey = expandedKey === key ? null : key;
+      renderNext();
+    });
+
+    li.appendChild(btn);
+    if (expandedKey === key) li.appendChild(buildDetail(dir, j, stopIdx));
     el.nextList.appendChild(li);
   }
+}
+
+function buildDetail(dir, journey, stopIdx) {
+  const wrap = document.createElement("div");
+  wrap.className = "dep-detail";
+
+  const onward = dir.stops
+    .slice(stopIdx + 1)
+    .map((s) => ({ s, t: journey.times[s.id] }))
+    .filter((x) => x.t);
+
+  const from = journey.times[dir.stops[stopIdx].id];
+  if (onward.length) {
+    const dest = onward[onward.length - 1];
+    const mins = toMinutes(dest.t) - toMinutes(from);
+    const jt = document.createElement("p");
+    jt.className = "jt";
+    jt.textContent = `Journey to ${dest.s.name}: ${mins} min`;
+    wrap.appendChild(jt);
+  }
+
+  const ul = document.createElement("ul");
+  onward.forEach((x, i) => {
+    const liEl = document.createElement("li");
+    if (i === onward.length - 1) liEl.className = "dest";
+    const name = document.createElement("span");
+    name.textContent = x.s.name;
+    const t = document.createElement("span");
+    t.textContent = x.t;
+    liEl.append(name, t);
+    ul.appendChild(liEl);
+  });
+  if (!onward.length) {
+    const liEl = document.createElement("li");
+    liEl.textContent = "Last stop on this route.";
+    ul.appendChild(liEl);
+  }
+  wrap.appendChild(ul);
+  return wrap;
 }
 
 function renderTimetable() {
@@ -258,15 +323,15 @@ function renderTimetable() {
     if (stop.id === choice.stopId) name.style.fontWeight = "700";
     tr.appendChild(name);
     for (const j of journeys) {
-      const td = document.createElement("td");
+      const cell = document.createElement("td");
       const v = j.times[stop.id];
       if (v) {
-        td.textContent = v;
+        cell.textContent = v;
       } else {
-        td.textContent = "—";
-        td.className = "skip";
+        cell.textContent = "—";
+        cell.className = "skip";
       }
-      tr.appendChild(td);
+      tr.appendChild(cell);
     }
     tbody.appendChild(tr);
   }
@@ -280,12 +345,6 @@ function th(text) {
   const c = document.createElement("th");
   c.textContent = text;
   return c;
-}
-
-function fmt(min) {
-  const h = String(Math.floor(min / 60) % 24).padStart(2, "0");
-  const m = String(min % 60).padStart(2, "0");
-  return `${h}:${m}`;
 }
 
 /* ---------- persistence ---------- */
