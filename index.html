@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b3d91" />
+  <title>Bus Times</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1 id="route-title">Bus Times</h1>
+    <p id="route-subtitle" class="subtitle"></p>
+  </header>
+
+  <main>
+    <section class="controls" aria-label="Choose your journey">
+      <label class="field" id="route-field" hidden>
+        <span>Route</span>
+        <select id="route-select"></select>
+      </label>
+
+      <label class="field">
+        <span>Direction</span>
+        <select id="direction-select"></select>
+      </label>
+
+      <label class="field">
+        <span>Your stop</span>
+        <select id="stop-select"></select>
+      </label>
+
+      <label class="field">
+        <span>Day</span>
+        <select id="day-select"></select>
+      </label>
+    </section>
+
+    <section class="next-buses" aria-live="polite">
+      <h2>Next departures</h2>
+      <ol id="next-list" class="next-list"></ol>
+      <p id="next-empty" class="empty" hidden>No more buses from this stop today.</p>
+    </section>
+
+    <section class="full-timetable">
+      <button id="toggle-timetable" class="toggle" aria-expanded="false">
+        Show full timetable
+      </button>
+      <div id="timetable-wrap" class="timetable-wrap" hidden></div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p id="data-note"></p>
+    <p class="disclaimer">Always check with the operator before travelling.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

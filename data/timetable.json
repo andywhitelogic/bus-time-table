@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "generatedAt": "2026-09-10",
+    "source": "manual-transcription",
+    "sourceUrl": "REPLACE_WITH_ARRIVA_X3_TIMETABLE_URL",
+    "note": "Placeholder times — not real. Replace with the Arriva X3 timetable before use."
+  },
+  "routes": [
+    {
+      "id": "x3",
+      "code": "X3",
+      "operator": "Arriva",
+      "name": "Placeholder A – Placeholder B",
+      "directions": [
+        {
+          "id": "x3-outbound",
+          "name": "Towards Placeholder B",
+          "stops": [
+            { "id": "a-busstn", "name": "Placeholder A Bus Station" },
+            { "id": "a-highst", "name": "Placeholder A High Street" },
+            { "id": "midpoint", "name": "Midpoint Interchange" },
+            { "id": "village", "name": "Somewhere Village Green" },
+            { "id": "b-retail", "name": "Placeholder B Retail Park" },
+            { "id": "b-centre", "name": "Placeholder B Town Centre" }
+          ],
+          "services": [
+            {
+              "daysOfWeek": ["Mon", "Tue", "Wed", "Thu", "Fri"],
+              "label": "Mondays to Fridays",
+              "journeys": [
+                { "id": "o-mf-1", "times": { "a-busstn": "06:45", "a-highst": "06:49", "midpoint": "07:05", "village": "07:14", "b-retail": "07:25", "b-centre": "07:32" } },
+                { "id": "o-mf-2", "times": { "a-busstn": "07:15", "a-highst": "07:19", "midpoint": "07:37", "village": "07:47", "b-retail": "07:59", "b-centre": "08:07" } },
+                { "id": "o-mf-3", "times": { "a-busstn": "07:45", "a-highst": "07:49", "midpoint": "08:07", "village": "08:17", "b-retail": "08:29", "b-centre": "08:37" } },
+                { "id": "o-mf-4", "times": { "a-busstn": "08:15", "a-highst": "08:19", "midpoint": "08:35", "village": null, "b-retail": "08:55", "b-centre": "09:02" } },
+                { "id": "o-mf-5", "times": { "a-busstn": "09:15", "a-highst": "09:19", "midpoint": "09:35", "village": "09:44", "b-retail": "09:55", "b-centre": "10:02" } },
+                { "id": "o-mf-6", "times": { "a-busstn": "10:15", "a-highst": "10:19", "midpoint": "10:35", "village": "10:44", "b-retail": "10:55", "b-centre": "11:02" } },
+                { "id": "o-mf-7", "times": { "a-busstn": "15:15", "a-highst": "15:19", "midpoint": "15:37", "village": "15:47", "b-retail": "15:59", "b-centre": "16:07" } },
+                { "id": "o-mf-8", "times": { "a-busstn": "16:15", "a-highst": "16:19", "midpoint": "16:39", "village": "16:49", "b-retail": "17:01", "b-centre": "17:10" } },
+                { "id": "o-mf-9", "times": { "a-busstn": "17:15", "a-highst": "17:19", "midpoint": "17:37", "village": "17:47", "b-retail": "17:59", "b-centre": "18:07" } }
+              ]
+            },
+            {
+              "daysOfWeek": ["Sat"],
+              "label": "Saturdays",
+              "journeys": [
+                { "id": "o-sat-1", "times": { "a-busstn": "08:15", "a-highst": "08:19", "midpoint": "08:35", "village": "08:44", "b-retail": "08:55", "b-centre": "09:02" } },
+                { "id": "o-sat-2", "times": { "a-busstn": "09:15", "a-highst": "09:19", "midpoint": "09:35", "village": "09:44", "b-retail": "09:55", "b-centre": "10:02" } },
+                { "id": "o-sat-3", "times": { "a-busstn": "10:15", "a-highst": "10:19", "midpoint": "10:35", "village": "10:44", "b-retail": "10:55", "b-centre": "11:02" } },
+                { "id": "o-sat-4", "times": { "a-busstn": "11:15", "a-highst": "11:19", "midpoint": "11:35", "village": "11:44", "b-retail": "11:55", "b-centre": "12:02" } },
+                { "id": "o-sat-5", "times": { "a-busstn": "12:15", "a-highst": "12:19", "midpoint": "12:35", "village": "12:44", "b-retail": "12:55", "b-centre": "13:02" } }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "x3-inbound",
+          "name": "Towards Placeholder A",
+          "stops": [
+            { "id": "b-centre", "name": "Placeholder B Town Centre" },
+            { "id": "b-retail", "name": "Placeholder B Retail Park" },
+            { "id": "village", "name": "Somewhere Village Green" },
+            { "id": "midpoint", "name": "Midpoint Interchange" },
+            { "id": "a-highst", "name": "Placeholder A High Street" },
+            { "id": "a-busstn", "name": "Placeholder A Bus Station" }
+          ],
+          "services": [
+            {
+              "daysOfWeek": ["Mon", "Tue", "Wed", "Thu", "Fri"],
+              "label": "Mondays to Fridays",
+              "journeys": [
+                { "id": "i-mf-1", "times": { "b-centre": "07:05", "b-retail": "07:11", "village": "07:22", "midpoint": "07:32", "a-highst": "07:48", "a-busstn": "07:53" } },
+                { "id": "i-mf-2", "times": { "b-centre": "07:35", "b-retail": "07:41", "village": "07:52", "midpoint": "08:04", "a-highst": "08:22", "a-busstn": "08:27" } },
+                { "id": "i-mf-3", "times": { "b-centre": "08:05", "b-retail": "08:11", "village": "08:22", "midpoint": "08:34", "a-highst": "08:52", "a-busstn": "08:57" } },
+                { "id": "i-mf-4", "times": { "b-centre": "15:35", "b-retail": "15:41", "village": "15:52", "midpoint": "16:06", "a-highst": "16:24", "a-busstn": "16:29" } },
+                { "id": "i-mf-5", "times": { "b-centre": "16:35", "b-retail": "16:41", "village": "16:52", "midpoint": "17:06", "a-highst": "17:24", "a-busstn": "17:29" } },
+                { "id": "i-mf-6", "times": { "b-centre": "17:35", "b-retail": "17:41", "village": "17:52", "midpoint": "18:04", "a-highst": "18:20", "a-busstn": "18:25" } }
+              ]
+            },
+            {
+              "daysOfWeek": ["Sat"],
+              "label": "Saturdays",
+              "journeys": [
+                { "id": "i-sat-1", "times": { "b-centre": "09:35", "b-retail": "09:41", "village": "09:52", "midpoint": "10:04", "a-highst": "10:20", "a-busstn": "10:25" } },
+                { "id": "i-sat-2", "times": { "b-centre": "11:35", "b-retail": "11:41", "village": "11:52", "midpoint": "12:04", "a-highst": "12:20", "a-busstn": "12:25" } },
+                { "id": "i-sat-3", "times": { "b-centre": "13:35", "b-retail": "13:41", "village": "13:52", "midpoint": "14:04", "a-highst": "14:20", "a-busstn": "14:25" } }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
