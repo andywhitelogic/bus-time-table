@@ -3,8 +3,8 @@
 A tiny static web app that shows the next departures for a bus route from a chosen
 stop, plus the full timetable for the day. Built for phones first.
 
-Currently set up for **Arriva Midlands X3** (Leicester and Market Harborough), key
-stops only, Monday to Saturday. Times were transcribed from
+Currently set up for **Arriva Midlands X3** (Leicester and Market Harborough), every
+stop, Monday to Saturday. Times come from
 [bustimes.org](https://bustimes.org/services/x3-leicester-to-market-harborough)
 (timetable valid from 3 September 2026). Sunday is not in the data yet.
 
@@ -22,9 +22,12 @@ yours, with the destination arrival highlighted.
 | `index.html` | Markup |
 | `styles.css` | Styling (light + dark) |
 | `app.js` | Loads the JSON, renders next departures and the timetable |
-| `data/timetable.json` | The timetable data — **this is the only file you edit to update times** |
+| `data/timetable.json` | Generated timetable data the app reads (do not edit by hand) |
+| `data/source/*.md` | The four bustimes.org tables the JSON is built from |
+| `scripts/build-timetable.ps1` | Turns `data/source/*.md` into `data/timetable.json` |
 
-No build step, no dependencies, no framework.
+The app itself has no build step, no dependencies and no framework. The build script
+is only for regenerating the timetable data.
 
 ## Running locally
 
@@ -44,9 +47,28 @@ Then open http://localhost:8000.
 Upload every file (keeping the `data/` folder) to any static/plain-HTML web host via
 cPanel, FTP, Netlify drop, GitHub Pages, etc. There is nothing server-side to run.
 
-## Updating the timetable (current method: hand-transcription)
+## Updating the timetable (current method)
 
-Edit `data/timetable.json`.
+1. Open the X3 timetable on
+   [bustimes.org](https://bustimes.org/services/x3-leicester-to-market-harborough),
+   pick a date for the day type you want (a weekday, then a Saturday).
+2. Copy each direction's grid into the matching file under `data/source/`
+   (`mf-outbound.md`, `mf-inbound.md`, `sat-outbound.md`, `sat-inbound.md`),
+   keeping the `| Stop | HH:MM | HH:MM | ... |` shape. Use the **same stop name**
+   for a stop in both the outbound and inbound files so it stays a single stop in
+   the app.
+3. Regenerate the data:
+
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File scripts/build-timetable.ps1
+   ```
+
+The one early Mon-Fri short working (Kibworth Beauchamp 05:45 to Market Hall) is
+added by the script itself; see the `$early` block if it ever changes.
+
+### Data shape (what the script emits)
+
+`data/timetable.json`:
 
 ```jsonc
 {
