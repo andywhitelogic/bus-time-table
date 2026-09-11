@@ -134,6 +134,25 @@ select {
 .dep-times .sep { color: var(--ink-soft); font-size: 1rem; }
 .dep-times .time.arr { color: var(--ink-soft); font-weight: 600; }
 
+.live-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  vertical-align: middle;
+  letter-spacing: 0.02em;
+}
+.live-badge.late { background: #fce8e8; color: #a23636; }
+.live-badge.early { background: #e7f3ec; color: #2f7a52; }
+.live-badge.ontime { background: #e7f3ec; color: #2f7a52; }
+@media (prefers-color-scheme: dark) {
+  .live-badge.late { background: #3a2323; color: #ff8f8f; }
+  .live-badge.early { background: #1e3327; color: #7fe0ac; }
+  .live-badge.ontime { background: #1e3327; color: #7fe0ac; }
+}
+
 .dep-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex-shrink: 0; }
 .dep-meta .duration { font-size: 0.75rem; color: var(--ink-soft); }
 .dep-meta .countdown { font-size: 0.95rem; color: var(--ink-soft); }

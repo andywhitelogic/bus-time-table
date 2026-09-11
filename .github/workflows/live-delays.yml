@@ -1,0 +1,38 @@
+name: Update live delays
+
+on:
+  schedule:
+    # Every 5 minutes, roughly 04:00-22:15 UTC - covers X3/X7 operating hours
+    # (~05:00-22:15 local) in both GMT and BST without polling BODS all night.
+    - cron: "*/5 4-22 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: live-delays
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Fetch live delays
+        env:
+          BODS_API_KEY: ${{ secrets.BODS_API_KEY }}
+        run: node scripts/live-delays.mjs
+
+      - name: Commit if changed
+        run: |
+          git config user.name "live-delays-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/live-delays.json
+          git diff --cached --quiet || git commit -m "Update live delays"
+          git push

@@ -23,7 +23,10 @@ const el = {
   dataNote: document.getElementById("data-note"),
 };
 
+const LIVE_MAX_AGE_MS = 20 * 60 * 1000; // ignore live-delays.json older than this
+
 let DATA = null;
+let LIVE = null;
 let choice = loadChoice();
 let expandedKey = null;
 
@@ -39,6 +42,9 @@ async function init() {
     console.error(err);
     return;
   }
+
+  loadLiveDelays();
+  setInterval(loadLiveDelays, 60000);
 
   buildDayOptions();
   buildRouteOptions();
@@ -218,6 +224,31 @@ function toMinutes(hhmm) {
   return h * 60 + m;
 }
 
+/* ---------- live delays (best-effort; absent/stale data is silently ignored) ---------- */
+
+async function loadLiveDelays() {
+  try {
+    const res = await fetch("data/live-delays.json", { cache: "no-cache" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    LIVE = data && data.generatedAt ? data : null;
+    render();
+  } catch {
+    // No live data published yet, or the fetch failed - the app already
+    // works fine on the static schedule alone, so just carry on without it.
+  }
+}
+
+// { delayMin, asOf } for a journey right now, or null if there's no live
+// reading, it's gone stale, or the estimate looks implausible.
+function liveDelayFor(journeyId) {
+  if (!LIVE || !LIVE.generatedAt) return null;
+  if (Date.now() - new Date(LIVE.generatedAt).getTime() > LIVE_MAX_AGE_MS) return null;
+  const d = LIVE.delays && LIVE.delays[journeyId];
+  if (!d || Date.now() - new Date(d.asOf).getTime() > LIVE_MAX_AGE_MS) return null;
+  return d;
+}
+
 /* ---------- render ---------- */
 
 function render() {
@@ -264,17 +295,24 @@ function renderNext(route, dir) {
   const nowMin = now.getHours() * 60 + now.getMinutes();
 
   const rows = journeysForDay(dir)
-    .map((j) => ({ j, dep: j.times[fromId], arr: j.times[toId] }))
+    .map((j) => {
+      const live = liveDelayFor(j.id);
+      const dep = j.times[fromId];
+      return { j, dep, arr: j.times[toId], live, liveDepMin: dep && live ? toMinutes(dep) + live.delayMin : null };
+    })
     .filter((r) => r.dep && r.arr)
     .sort((a, b) => toMinutes(a.dep) - toMinutes(b.dep));
 
-  const list = isToday ? rows.filter((r) => toMinutes(r.dep) >= nowMin) : rows;
+  // Use the live-adjusted departure (when we have one) to decide what still
+  // counts as "upcoming" - a bus running late shouldn't vanish from the list
+  // just because its scheduled time has technically passed.
+  const list = isToday ? rows.filter((r) => (r.liveDepMin ?? toMinutes(r.dep)) >= nowMin) : rows;
   const shown = isToday ? list.slice(0, 6) : list;
 
   el.nextList.innerHTML = "";
   el.nextEmpty.hidden = shown.length > 0;
 
-  for (const { j, dep, arr } of shown) {
+  for (const { j, dep, arr, live, liveDepMin } of shown) {
     const key = `${j.id}@${dep}`;
     const li = document.createElement("li");
 
@@ -288,6 +326,20 @@ function renderNext(route, dir) {
     const depSpan = document.createElement("span");
     depSpan.className = "time";
     depSpan.textContent = dep;
+    if (live) {
+      const badge = document.createElement("span");
+      if (live.delayMin >= 2) {
+        badge.className = "live-badge late";
+        badge.textContent = `live +${live.delayMin}`;
+      } else if (live.delayMin <= -2) {
+        badge.className = "live-badge early";
+        badge.textContent = `live ${live.delayMin}`;
+      } else {
+        badge.className = "live-badge ontime";
+        badge.textContent = "live on time";
+      }
+      depSpan.appendChild(badge);
+    }
     const sep = document.createElement("span");
     sep.className = "sep";
     sep.textContent = "→";
@@ -303,7 +355,7 @@ function renderNext(route, dir) {
     dur.textContent = `${toMinutes(arr) - toMinutes(dep)} min`;
     meta.appendChild(dur);
     if (isToday) {
-      const mins = toMinutes(dep) - nowMin;
+      const mins = (liveDepMin ?? toMinutes(dep)) - nowMin;
       const cd = document.createElement("span");
       cd.className = "countdown";
       cd.textContent = mins <= 0 ? "due" : mins < 60 ? `${mins} min` : `${Math.floor(mins / 60)}h ${mins % 60}m`;
