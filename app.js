@@ -406,9 +406,13 @@ function th(text) {
 
 /* ---------- persistence ---------- */
 
+// Bus/From/To are remembered across visits. Day is not: it always starts on
+// today's date so re-opening the app doesn't silently show a stale day.
 function loadChoice() {
   try {
-    return JSON.parse(localStorage.getItem(STORE_KEY)) || {};
+    const saved = JSON.parse(localStorage.getItem(STORE_KEY)) || {};
+    delete saved.dayKey;
+    return saved;
   } catch {
     return {};
   }
@@ -416,7 +420,8 @@ function loadChoice() {
 
 function saveChoice() {
   try {
-    localStorage.setItem(STORE_KEY, JSON.stringify(choice));
+    const { routeId, fromId, toId } = choice;
+    localStorage.setItem(STORE_KEY, JSON.stringify({ routeId, fromId, toId }));
   } catch {
     /* ignore */
   }
