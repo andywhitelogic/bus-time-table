@@ -1,9 +1,10 @@
 <#
   Builds data/timetable.json from the markdown tables in data/source/.
 
-  To refresh times: replace the four data/source/*.md tables with fresh ones
-  from bustimes.org (same "| Stop | HH:MM | ... |" shape, stop names matching
-  between the outbound and inbound files) and re-run:
+  To refresh times for a route: replace its four data/source/<prefix>-*.md
+  tables with fresh ones from bustimes.org (same "| Stop | HH:MM | ... |"
+  shape, stop names matching between the outbound and inbound files of that
+  route) and re-run:
 
       powershell -ExecutionPolicy Bypass -File scripts/build-timetable.ps1
 #>
@@ -82,13 +83,8 @@ function New-Direction([string]$id, [string]$name, $mf, $sat, $extraMfJourneys) 
   }
 }
 
-$mfOut  = Build-Leg (Read-Table 'mf-outbound.md')  'o-mf'
-$mfIn   = Build-Leg (Read-Table 'mf-inbound.md')   'i-mf'
-$satOut = Build-Leg (Read-Table 'sat-outbound.md') 'o-sa'
-$satIn  = Build-Leg (Read-Table 'sat-inbound.md')  'i-sa'
-
-# Early Mon-Fri short working: starts at Kibworth Beauchamp 05:45, runs to Market Hall.
-$early = [pscustomobject]@{
+# Early X3 Mon-Fri short working: starts at Kibworth Beauchamp 05:45, runs to Market Hall.
+$x3Early = [pscustomobject]@{
   id = 'o-mf-early'
   times = [ordered]@{
     'kibworth-beauchamp-the-square'         = '05:45'
@@ -104,30 +100,47 @@ $early = [pscustomobject]@{
   }
 }
 
+function Build-Route([string]$prefix, [string]$id, [string]$code, [string]$operator, [string]$name,
+                      [string]$outName, [string]$inName, $extraMfJourneys) {
+  $mfOut  = Build-Leg (Read-Table "$prefix-mf-outbound.md")  "o-$prefix-mf"
+  $mfIn   = Build-Leg (Read-Table "$prefix-mf-inbound.md")   "i-$prefix-mf"
+  $satOut = Build-Leg (Read-Table "$prefix-sat-outbound.md") "o-$prefix-sa"
+  $satIn  = Build-Leg (Read-Table "$prefix-sat-inbound.md")  "i-$prefix-sa"
+  [pscustomobject]@{
+    id = $id; code = $code; operator = $operator; name = $name
+    directions = @(
+      (New-Direction "$id-outbound" $outName $mfOut $satOut $extraMfJourneys)
+      (New-Direction "$id-inbound"  $inName  $mfIn  $satIn  $null)
+    )
+  }
+}
+
+$x3 = Build-Route 'x3' 'x3' 'X3' 'Arriva Midlands' 'Leicester and Market Harborough' `
+        'To Market Harborough' 'To Leicester' $x3Early
+
+$x7 = Build-Route 'x7' 'x7' 'X7' 'Stagecoach Midlands' 'Northampton, Market Harborough and Leicester' `
+        'To Leicester' 'To Northampton' $null
+
 $doc = [pscustomobject]@{
   meta = [pscustomobject]@{
     generatedAt = (Get-Date -Format 'yyyy-MM-dd')
-    source      = 'bustimes.org (Arriva Midlands X3)'
-    sourceUrl   = 'https://bustimes.org/services/x3-leicester-to-market-harborough'
-    validFrom   = '2026-09-03'
+    source      = 'bustimes.org'
+    sourceUrl   = 'https://bustimes.org/'
+    validFrom   = '2026-09-10'
     note        = 'All stops, Monday to Saturday. Sunday not added yet.'
   }
-  routes = @(
-    [pscustomobject]@{
-      id = 'x3'; code = 'X3'; operator = 'Arriva Midlands'
-      name = 'Leicester and Market Harborough'
-      directions = @(
-        (New-Direction 'x3-to-harborough' 'To Market Harborough' $mfOut $satOut $early)
-        (New-Direction 'x3-to-leicester'  'To Leicester'         $mfIn  $satIn  $null)
-      )
-    }
-  )
+  routes = @($x3, $x7)
 }
 
 $json = $doc | ConvertTo-Json -Depth 20
 # Minify: JSON ignores inter-token whitespace and no string literal here spans lines.
 $json = (($json -split "`r?`n") | ForEach-Object { $_.Trim() }) -join ''
 [System.IO.File]::WriteAllText($outFile, $json, (New-Object System.Text.UTF8Encoding($false)))
+
 Write-Host "Wrote $outFile"
-Write-Host ("  To Market Harborough: {0} stops, {1} + {2} journeys" -f $doc.routes[0].directions[0].stops.Count, $doc.routes[0].directions[0].services[0].journeys.Count, $doc.routes[0].directions[0].services[1].journeys.Count)
-Write-Host ("  To Leicester:         {0} stops, {1} + {2} journeys" -f $doc.routes[0].directions[1].stops.Count, $doc.routes[0].directions[1].services[0].journeys.Count, $doc.routes[0].directions[1].services[1].journeys.Count)
+foreach ($route in $doc.routes) {
+  Write-Host ("  {0} ({1}):" -f $route.code, $route.name)
+  foreach ($dir in $route.directions) {
+    Write-Host ("    {0}: {1} stops, {2} + {3} journeys" -f $dir.name, $dir.stops.Count, $dir.services[0].journeys.Count, $dir.services[1].journeys.Count)
+  }
+}

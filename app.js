@@ -11,11 +11,13 @@ const el = {
   routeSelect: document.getElementById("route-select"),
   routeStatic: document.getElementById("route-static"),
   routeLine: document.getElementById("route-line"),
-  directionSelect: document.getElementById("direction-select"),
-  stopSelect: document.getElementById("stop-select"),
+  fromSelect: document.getElementById("from-select"),
+  toSelect: document.getElementById("to-select"),
+  swapBtn: document.getElementById("swap-btn"),
   daySelect: document.getElementById("day-select"),
   nextList: document.getElementById("next-list"),
   nextEmpty: document.getElementById("next-empty"),
+  nextNone: document.getElementById("next-none"),
   toggleTimetable: document.getElementById("toggle-timetable"),
   timetableWrap: document.getElementById("timetable-wrap"),
   dataNote: document.getElementById("data-note"),
@@ -23,7 +25,7 @@ const el = {
 
 let DATA = null;
 let choice = loadChoice();
-let expandedKey = null; // which departure row is open
+let expandedKey = null;
 
 init();
 
@@ -43,20 +45,28 @@ async function init() {
 
   el.routeSelect.addEventListener("change", () => {
     choice.routeId = el.routeSelect.value;
-    choice.directionId = null;
-    choice.stopId = null;
+    choice.fromId = null;
+    choice.toId = null;
+    expandedKey = null;
     saveChoice();
     onRouteChange();
   });
-  el.directionSelect.addEventListener("change", () => {
-    choice.directionId = el.directionSelect.value;
-    choice.stopId = null;
+  el.fromSelect.addEventListener("change", () => {
+    choice.fromId = el.fromSelect.value;
     expandedKey = null;
     saveChoice();
-    onDirectionChange();
+    render();
   });
-  el.stopSelect.addEventListener("change", () => {
-    choice.stopId = el.stopSelect.value;
+  el.toSelect.addEventListener("change", () => {
+    choice.toId = el.toSelect.value;
+    expandedKey = null;
+    saveChoice();
+    render();
+  });
+  el.swapBtn.addEventListener("click", () => {
+    [choice.fromId, choice.toId] = [choice.toId, choice.fromId];
+    el.fromSelect.value = choice.fromId;
+    el.toSelect.value = choice.toId;
     expandedKey = null;
     saveChoice();
     render();
@@ -114,43 +124,33 @@ function buildRouteOptions() {
     choice.routeId = routes[0] && routes[0].id;
   }
   el.routeSelect.value = choice.routeId;
-  if (single && routes[0]) el.routeStatic.textContent = routes[0].code;
 }
 
 function onRouteChange() {
   const route = currentRoute();
   if (!route) return;
   el.routeStatic.textContent = route.code;
-  el.routeLine.textContent = `${route.name}${route.operator ? " · " + route.operator : ""}`;
 
-  el.directionSelect.innerHTML = "";
-  for (const d of route.directions) {
-    const opt = document.createElement("option");
-    opt.value = d.id;
-    opt.textContent = d.name;
-    el.directionSelect.appendChild(opt);
-  }
-  if (!route.directions.some((d) => d.id === choice.directionId)) {
-    choice.directionId = route.directions[0] && route.directions[0].id;
-  }
-  el.directionSelect.value = choice.directionId;
-  onDirectionChange();
-}
+  const stops = corridorStops(route);
+  const fillSelect = (select) => {
+    select.innerHTML = "";
+    for (const s of stops) {
+      const opt = document.createElement("option");
+      opt.value = s.id;
+      opt.textContent = s.name;
+      select.appendChild(opt);
+    }
+  };
+  fillSelect(el.fromSelect);
+  fillSelect(el.toSelect);
 
-function onDirectionChange() {
-  const dir = currentDirection();
-  if (!dir) return;
-  el.stopSelect.innerHTML = "";
-  for (const s of dir.stops) {
-    const opt = document.createElement("option");
-    opt.value = s.id;
-    opt.textContent = s.name;
-    el.stopSelect.appendChild(opt);
+  const ids = stops.map((s) => s.id);
+  if (!ids.includes(choice.fromId)) choice.fromId = ids[0];
+  if (!ids.includes(choice.toId) || choice.toId === choice.fromId) {
+    choice.toId = ids[ids.length - 1] !== choice.fromId ? ids[ids.length - 1] : ids[Math.max(0, ids.length - 2)];
   }
-  if (!dir.stops.some((s) => s.id === choice.stopId)) {
-    choice.stopId = dir.stops[0] && dir.stops[0].id;
-  }
-  el.stopSelect.value = choice.stopId;
+  el.fromSelect.value = choice.fromId;
+  el.toSelect.value = choice.toId;
   saveChoice();
   render();
 }
@@ -160,15 +160,44 @@ function onDirectionChange() {
 function currentRoute() {
   return (DATA.routes || []).find((r) => r.id === choice.routeId) || null;
 }
-function currentDirection() {
-  const route = currentRoute();
-  if (!route) return null;
-  return route.directions.find((d) => d.id === choice.directionId) || null;
+
+// Every stop served by either direction of a route, in a sensible order:
+// direction[0]'s order, with direction[1]-only stops spliced in near their
+// neighbours.
+function corridorStops(route) {
+  const dirs = route.directions;
+  const order = dirs[0].stops.map((s) => s.id);
+  const known = new Set(order);
+  const other = dirs[1].stops.map((s) => s.id);
+
+  other.forEach((id, i) => {
+    if (known.has(id)) return;
+    let afterId = null;
+    for (let j = i - 1; j >= 0; j--) {
+      if (known.has(other[j])) { afterId = other[j]; break; }
+    }
+    const at = afterId ? order.indexOf(afterId) + 1 : order.length;
+    order.splice(at, 0, id);
+    known.add(id);
+  });
+
+  const allStops = [...dirs[0].stops, ...dirs[1].stops];
+  const nameOf = (id) => (allStops.find((s) => s.id === id) || {}).name || id;
+  return order.map((id) => ({ id, name: nameOf(id) }));
 }
 
-function journeysForDay() {
-  const dir = currentDirection();
-  if (!dir) return [];
+// The direction of `route` that runs from fromId to toId (in that order), or null.
+function resolveDirection(route, fromId, toId) {
+  for (const dir of route.directions) {
+    const ids = dir.stops.map((s) => s.id);
+    const fi = ids.indexOf(fromId);
+    const ti = ids.indexOf(toId);
+    if (fi !== -1 && ti !== -1 && fi < ti) return dir;
+  }
+  return null;
+}
+
+function journeysForDay(dir) {
   const out = [];
   for (const svc of dir.services || []) {
     if (!svc.daysOfWeek.includes(choice.dayKey)) continue;
@@ -191,34 +220,60 @@ function toMinutes(hhmm) {
 /* ---------- render ---------- */
 
 function render() {
-  renderNext();
-  renderTimetable();
+  const route = currentRoute();
+  if (!route) return;
+
+  if (choice.fromId === choice.toId) {
+    el.routeLine.textContent = `${route.name} · ${route.operator}`;
+    el.nextList.innerHTML = "";
+    el.nextEmpty.hidden = true;
+    el.nextNone.hidden = false;
+    el.nextNone.textContent = "Pick two different stops.";
+    el.timetableWrap.innerHTML = `<p class="empty">Pick two different stops.</p>`;
+    return;
+  }
+
+  const dir = resolveDirection(route, choice.fromId, choice.toId);
+  if (!dir) {
+    el.routeLine.textContent = `${route.name} · ${route.operator}`;
+    el.nextList.innerHTML = "";
+    el.nextEmpty.hidden = true;
+    el.nextNone.hidden = false;
+    el.nextNone.textContent = `${route.code} doesn't run that way. Try the swap button.`;
+    el.timetableWrap.innerHTML = `<p class="empty">${route.code} doesn't run this direction between those stops.</p>`;
+    return;
+  }
+
+  el.nextNone.hidden = true;
+  el.routeLine.textContent = `${dir.name} · ${route.operator}`;
+
+  renderNext(route, dir);
+  renderTimetable(dir);
 }
 
-function renderNext() {
-  const dir = currentDirection();
-  const stopId = choice.stopId;
-  if (!dir || !stopId) return;
+function renderNext(route, dir) {
+  const fromId = choice.fromId;
+  const toId = choice.toId;
+  const fromIdx = dir.stops.findIndex((s) => s.id === fromId);
+  const toIdx = dir.stops.findIndex((s) => s.id === toId);
 
   const todayKey = DAYS[new Date().getDay()];
   const isToday = choice.dayKey === todayKey;
   const now = new Date();
   const nowMin = now.getHours() * 60 + now.getMinutes();
 
-  const rows = journeysForDay()
-    .map((j) => ({ j, dep: j.times[stopId] }))
-    .filter((r) => r.dep)
+  const rows = journeysForDay(dir)
+    .map((j) => ({ j, dep: j.times[fromId], arr: j.times[toId] }))
+    .filter((r) => r.dep && r.arr)
     .sort((a, b) => toMinutes(a.dep) - toMinutes(b.dep));
 
   const list = isToday ? rows.filter((r) => toMinutes(r.dep) >= nowMin) : rows;
-  const shown = isToday ? list.slice(0, 5) : list;
+  const shown = isToday ? list.slice(0, 6) : list;
 
   el.nextList.innerHTML = "";
   el.nextEmpty.hidden = shown.length > 0;
 
-  const stopIdx = dir.stops.findIndex((s) => s.id === stopId);
-
-  for (const { j, dep } of shown) {
+  for (const { j, dep, arr } of shown) {
     const key = `${j.id}@${dep}`;
     const li = document.createElement("li");
 
@@ -227,80 +282,82 @@ function renderNext() {
     btn.type = "button";
     btn.setAttribute("aria-expanded", String(expandedKey === key));
 
-    const time = document.createElement("span");
-    time.className = "time";
-    time.textContent = dep;
+    const times = document.createElement("span");
+    times.className = "dep-times";
+    const depSpan = document.createElement("span");
+    depSpan.className = "time";
+    depSpan.textContent = dep;
+    const sep = document.createElement("span");
+    sep.className = "sep";
+    sep.textContent = "→";
+    const arrSpan = document.createElement("span");
+    arrSpan.className = "time arr";
+    arrSpan.textContent = arr;
+    times.append(depSpan, sep, arrSpan);
 
-    const right = document.createElement("span");
-    right.className = "countdown";
+    const meta = document.createElement("span");
+    meta.className = "dep-meta";
+    const dur = document.createElement("span");
+    dur.className = "duration";
+    dur.textContent = `${toMinutes(arr) - toMinutes(dep)} min`;
+    meta.appendChild(dur);
     if (isToday) {
       const mins = toMinutes(dep) - nowMin;
-      right.textContent =
-        mins <= 0 ? "due" : mins < 60 ? `${mins} min` : `${Math.floor(mins / 60)}h ${mins % 60}m`;
-      if (mins <= 15) right.classList.add("soon");
+      const cd = document.createElement("span");
+      cd.className = "countdown";
+      cd.textContent = mins <= 0 ? "due" : mins < 60 ? `${mins} min` : `${Math.floor(mins / 60)}h ${mins % 60}m`;
+      if (mins <= 15) cd.classList.add("soon");
+      meta.appendChild(cd);
     }
 
     const chev = document.createElement("span");
     chev.className = "chevron";
     chev.textContent = "›";
-    right.appendChild(document.createTextNode(" "));
-    right.appendChild(chev);
 
-    btn.append(time, right);
+    btn.append(times, meta, chev);
     btn.addEventListener("click", () => {
       expandedKey = expandedKey === key ? null : key;
-      renderNext();
+      renderNext(route, dir);
     });
 
     li.appendChild(btn);
-    if (expandedKey === key) li.appendChild(buildDetail(dir, j, stopIdx));
+    if (expandedKey === key) li.appendChild(buildDetail(dir, j, fromIdx, toIdx));
     el.nextList.appendChild(li);
   }
 }
 
-function buildDetail(dir, journey, stopIdx) {
+function buildDetail(dir, journey, fromIdx, toIdx) {
   const wrap = document.createElement("div");
   wrap.className = "dep-detail";
 
-  const onward = dir.stops
-    .slice(stopIdx + 1)
+  const between = dir.stops
+    .slice(fromIdx + 1, toIdx)
     .map((s) => ({ s, t: journey.times[s.id] }))
     .filter((x) => x.t);
 
-  const from = journey.times[dir.stops[stopIdx].id];
-  if (onward.length) {
-    const dest = onward[onward.length - 1];
-    const mins = toMinutes(dest.t) - toMinutes(from);
-    const jt = document.createElement("p");
-    jt.className = "jt";
-    jt.textContent = `Journey to ${dest.s.name}: ${mins} min`;
-    wrap.appendChild(jt);
+  if (!between.length) {
+    const p = document.createElement("p");
+    p.textContent = "No timed stops in between.";
+    wrap.appendChild(p);
+    return wrap;
   }
 
   const ul = document.createElement("ul");
-  onward.forEach((x, i) => {
-    const liEl = document.createElement("li");
-    if (i === onward.length - 1) liEl.className = "dest";
+  for (const x of between) {
+    const li = document.createElement("li");
     const name = document.createElement("span");
     name.textContent = x.s.name;
     const t = document.createElement("span");
     t.textContent = x.t;
-    liEl.append(name, t);
-    ul.appendChild(liEl);
-  });
-  if (!onward.length) {
-    const liEl = document.createElement("li");
-    liEl.textContent = "Last stop on this route.";
-    ul.appendChild(liEl);
+    li.append(name, t);
+    ul.appendChild(li);
   }
   wrap.appendChild(ul);
   return wrap;
 }
 
-function renderTimetable() {
-  const dir = currentDirection();
-  if (!dir) return;
-  const journeys = journeysForDay();
+function renderTimetable(dir) {
+  const journeys = journeysForDay(dir);
 
   if (journeys.length === 0) {
     el.timetableWrap.innerHTML = `<p class="empty">No service on ${DAY_LABELS[choice.dayKey]}.</p>`;
@@ -320,7 +377,7 @@ function renderTimetable() {
     const tr = document.createElement("tr");
     const name = document.createElement("td");
     name.textContent = stop.name;
-    if (stop.id === choice.stopId) name.style.fontWeight = "700";
+    if (stop.id === choice.fromId || stop.id === choice.toId) name.style.fontWeight = "700";
     tr.appendChild(name);
     for (const j of journeys) {
       const cell = document.createElement("td");

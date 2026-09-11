@@ -3,17 +3,21 @@
 A tiny static web app that shows the next departures for a bus route from a chosen
 stop, plus the full timetable for the day. Built for phones first.
 
-Currently set up for **Arriva Midlands X3** (Leicester and Market Harborough), every
-stop, Monday to Saturday. Times come from
-[bustimes.org](https://bustimes.org/services/x3-leicester-to-market-harborough)
-(timetable valid from 3 September 2026). Sunday is not in the data yet.
+Two routes are set up, every stop, Monday to Saturday, from
+[bustimes.org](https://bustimes.org/) (timetables valid from September 2026):
 
-Stagecoach **X7** can be added later by dropping another route entry into
-`data/timetable.json`. The app shows a route picker automatically once there is more
-than one route.
+- **X3** (Arriva Midlands) — Leicester and Market Harborough
+- **X7** (Stagecoach Midlands) — Northampton, Market Harborough and Leicester
 
-Tapping a departure expands it to show the time that bus reaches every stop after
-yours, with the destination arrival highlighted.
+Sunday is not in the data yet for either. Adding a third route later is just another
+set of `data/source/<prefix>-*.md` files plus one line in
+`scripts/build-timetable.ps1` — the app's route picker (**Bus**) and everything else
+adapts automatically.
+
+Pick a **Bus**, a **From** stop and a **To** stop (swap them with the ⇄ button) and
+the departures list shows the departure and arrival time for every journey that runs
+that way, with a live countdown for today. Tapping a journey expands it to show the
+stops in between.
 
 ## Files
 
@@ -23,7 +27,7 @@ yours, with the destination arrival highlighted.
 | `styles.css` | Styling (light + dark) |
 | `app.js` | Loads the JSON, renders next departures and the timetable |
 | `data/timetable.json` | Generated timetable data the app reads (do not edit by hand) |
-| `data/source/*.md` | The four bustimes.org tables the JSON is built from |
+| `data/source/x3-*.md`, `data/source/x7-*.md` | The bustimes.org tables each route's JSON is built from |
 | `scripts/build-timetable.ps1` | Turns `data/source/*.md` into `data/timetable.json` |
 
 The app itself has no build step, no dependencies and no framework. The build script
@@ -49,22 +53,28 @@ cPanel, FTP, Netlify drop, GitHub Pages, etc. There is nothing server-side to ru
 
 ## Updating the timetable (current method)
 
-1. Open the X3 timetable on
-   [bustimes.org](https://bustimes.org/services/x3-leicester-to-market-harborough),
-   pick a date for the day type you want (a weekday, then a Saturday).
-2. Copy each direction's grid into the matching file under `data/source/`
-   (`mf-outbound.md`, `mf-inbound.md`, `sat-outbound.md`, `sat-inbound.md`),
+Each route has four source tables named `<prefix>-<day>-<direction>.md`, e.g.
+`x3-mf-outbound.md`, `x7-sat-inbound.md` (`mf` = Monday-Friday, `sat` = Saturday).
+
+1. Open the route's page on [bustimes.org](https://bustimes.org/), pick a date for
+   the day type you want (a weekday, then a Saturday).
+2. Copy each direction's grid into the matching `data/source/<prefix>-*.md` file,
    keeping the `| Stop | HH:MM | HH:MM | ... |` shape. Use the **same stop name**
-   for a stop in both the outbound and inbound files so it stays a single stop in
-   the app.
+   in both the outbound and inbound files for a stop served both ways, so it stays
+   a single stop in the app.
 3. Regenerate the data:
 
    ```powershell
    powershell -ExecutionPolicy Bypass -File scripts/build-timetable.ps1
    ```
 
-The one early Mon-Fri short working (Kibworth Beauchamp 05:45 to Market Hall) is
-added by the script itself; see the `$early` block if it ever changes.
+To add a new route, add its four `data/source/<prefix>-*.md` files and one more
+`Build-Route` call (copy the `$x7 = Build-Route ...` line) near the bottom of
+`scripts/build-timetable.ps1`.
+
+X3's one early Mon-Fri short working (Kibworth Beauchamp 05:45 to Market Hall) is
+added by the script itself, since it doesn't start from either table's first stop;
+see the `$x3Early` block if it ever changes.
 
 ### Data shape (what the script emits)
 
@@ -84,7 +94,7 @@ added by the script itself; see the `$early` block if it ever changes.
       "name": "Leicester and Market Harborough",
       "directions": [
         {
-          "id": "x3-to-harborough",
+          "id": "x3-outbound",
           "name": "To Market Harborough",
           "stops": [
             { "id": "haymarket", "name": "Leicester, Haymarket Bus Station" }
@@ -120,6 +130,9 @@ Rules:
   not stop.
 - One `service` per distinct day pattern (weekday / Saturday / Sunday / school days).
   A day with no matching service shows "No service".
+- The app has no direction picker. Given a **From** and **To** stop, it searches a
+  route's directions for one where both stops appear in that order and uses it —
+  so a direction only needs its own stop list; the app works out which way to go.
 
 ## Planned: switch to Bus Open Data Service (BODS)
 

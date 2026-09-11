@@ -9,7 +9,7 @@
 </head>
 <body>
   <main>
-    <section class="controls" aria-label="Choose your bus">
+    <section class="controls" aria-label="Choose your journey">
       <div class="field field-route">
         <span>Bus</span>
         <select id="route-select"></select>
@@ -17,28 +17,31 @@
       </div>
 
       <label class="field">
-        <span>Direction</span>
-        <select id="direction-select"></select>
-      </label>
-
-      <label class="field">
-        <span>Your stop</span>
-        <select id="stop-select"></select>
-      </label>
-
-      <label class="field">
         <span>Day</span>
         <select id="day-select"></select>
       </label>
+
+      <div class="field-picker">
+        <label class="field">
+          <span>From</span>
+          <select id="from-select"></select>
+        </label>
+        <button id="swap-btn" type="button" title="Swap departure and arrival" aria-label="Swap departure and arrival">⇄</button>
+        <label class="field">
+          <span>To</span>
+          <select id="to-select"></select>
+        </label>
+      </div>
     </section>
 
     <p id="route-line" class="route-line"></p>
 
     <section class="next-buses" aria-live="polite">
-      <h2>Next departures</h2>
+      <h2>Departures</h2>
       <ol id="next-list" class="next-list"></ol>
-      <p id="next-empty" class="empty" hidden>No more buses from this stop today.</p>
-      <p class="hint">Tap a time to see when it reaches each stop.</p>
+      <p id="next-empty" class="empty" hidden>No more buses today.</p>
+      <p id="next-none" class="empty" hidden></p>
+      <p class="hint">Tap a journey to see the stops in between.</p>
     </section>
 
     <section class="full-timetable">
@@ -51,7 +54,7 @@
 
   <footer class="app-footer">
     <p id="data-note"></p>
-    <p class="disclaimer">Always check with Arriva before travelling.</p>
+    <p class="disclaimer">Always check with the operator before travelling.</p>
   </footer>
 
   <script src="app.js"></script>
