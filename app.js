@@ -45,8 +45,9 @@ async function init() {
 
   el.routeSelect.addEventListener("change", () => {
     choice.routeId = el.routeSelect.value;
-    choice.fromId = null;
-    choice.toId = null;
+    // Keep From/To as-is where possible: onRouteChange() below only replaces
+    // them if the new route doesn't have that stop at all (e.g. a stop the
+    // two routes both serve, like Leicester Haymarket, should stay selected).
     expandedKey = null;
     saveChoice();
     onRouteChange();
