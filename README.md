@@ -76,6 +76,15 @@ X3's one early Mon-Fri short working (Kibworth Beauchamp 05:45 to Market Hall) i
 added by the script itself, since it doesn't start from either table's first stop;
 see the `$x3Early` block if it ever changes.
 
+`scripts/fix-x7-outbound-gap.ps1` is a one-off patch, already applied: the
+bustimes.org read for X7's Oadby/Stoneygate/Knighton Road/Clarendon Park stretch
+(Northampton-to-Leicester direction only) came back with every one of those stops
+showing an identical time in every journey — not physically possible over that
+distance. It re-spaces those stops proportionally between the two neighbouring
+stops that read correctly, using the reverse direction's real spacing for the same
+stops. Re-run it (before rebuilding) if a future refresh of
+`x7-mf-outbound.md` / `x7-sat-outbound.md` reintroduces the same fault.
+
 ### Data shape (what the script emits)
 
 `data/timetable.json`:

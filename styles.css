@@ -129,8 +129,6 @@ select {
   text-align: left;
   cursor: pointer;
 }
-.next-list li:first-child .dep { outline: 2px solid var(--accent); }
-
 .dep-times { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 .dep-times .time { font-size: 1.3rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .dep-times .sep { color: var(--ink-soft); font-size: 1rem; }
